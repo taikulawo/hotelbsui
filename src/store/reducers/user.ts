@@ -1,5 +1,6 @@
 import { AnyAction, Action, Dispatch } from "redux";
 import { useDispatch } from "react-redux";
+import { RoomColumn } from "./room";
 
 export interface Any {
   [key: string]: any
@@ -15,7 +16,7 @@ export interface ConsumerColumn extends Any {
 }
 
 export type User = Consumers | Staffs
-export type UserColumns = ConsumerColumn | StaffColumn
+export type Columns = ConsumerColumn | StaffColumn | RoomColumn
 export type ID = string
 export interface StaffColumn extends Any {
   username: string

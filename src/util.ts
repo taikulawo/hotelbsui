@@ -1,10 +1,11 @@
-import { UserColumns } from "./store/reducers/user"
-import { Staffs } from "./store/reducers/user"
+import { Columns } from "./store/reducers/user"
+import { RoomColumn } from "./store/reducers/room"
 
-export function convertToDataSource(data: Array<UserColumns>): Array<{[key:string]:string}> {
-  let a = data.map(d => ({
+export function convertToDataSource(data: Array<Columns>, pk: string): Array<{ [key: string]: string }> {
+  debugger
+  let a = data.map((d:any) => ({
     ...d,
-    key: d['id'],
+    key: d[pk],
   }))
   return a
 }
@@ -13,7 +14,7 @@ export function convertToDataSource(data: Array<UserColumns>): Array<{[key:strin
  * 
  * @param {Array} data 
  */
-export function convertToColumn(keys: Array<string>):any[] {
+export function convertToColumn(keys: Array<string>): any[] {
   // remove id column
   keys = removeFromArray(keys, 'id')
   let columns = keys.map(k => ({

@@ -24,6 +24,6 @@
     "src"
   ],
   "files": [
-    "index.d.ts"
+    "index.d.ts", "src/components/consumer/types.tsx"
   ]
 }

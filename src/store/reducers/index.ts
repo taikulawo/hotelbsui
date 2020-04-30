@@ -1,5 +1,6 @@
 import { combineReducers, Action, Reducer, AnyAction } from "redux";
-import user, { StateOfInitial } from './user'
+import user, { StateOfInitial as StateOfInitialUser } from './user'
+import rooms, { StateOfInitial } from './room'
 const initialState: indexTypeOfState = { count: 0, loading: true }
 export type indexTypeOfState = {
   count: number
@@ -19,10 +20,12 @@ function index(state = initialState, action: AnyAction) {
 
 export default combineReducers({
   index,
-  user
+  user,
+  rooms
 })
 
 export type TypeOfState = {
-  user: StateOfInitial,
-  index: indexTypeOfState
+  user: StateOfInitialUser,
+  index: indexTypeOfState,
+  rooms: StateOfInitial
 }

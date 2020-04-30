@@ -13,6 +13,7 @@ import User from './components/user';
 import Consumer from './components/consumer';
 import Home from './components/home'
 import Staff from './components/staff';
+import Room from './components/room';
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 export default connect()(class extends React.Component {
@@ -69,6 +70,12 @@ export default connect()(class extends React.Component {
                         <span>员工</span>
                       </Link></Menu.Item>
                   </SubMenu>
+                  <Menu.Item key="/room">
+                    <Link to="/room">
+                      <PieChartOutlined />
+                      <span>房间类型</span>
+                    </Link>
+                  </Menu.Item>
                 </Menu>
               </Sider>
               <Layout className="site-layout">
@@ -76,9 +83,10 @@ export default connect()(class extends React.Component {
                 <Content className="display-content" style={{ margin: '0 16px' }}>
                   <Switch>
                     <Route path="/user" component={User} exact></Route>
-                    <Route path="/user/consumers" component={Consumer}></Route>
-                    <Route path="/user/staffs" component={Staff}></Route>
-                    <Route path="/" component={Home}></Route>
+                    <Route path="/user/consumers" exact component={Consumer}></Route>
+                    <Route path="/user/staffs" exact component={Staff}></Route>
+                    <Route path="/" exact component={Home}></Route>
+                    <Route path="/room" component={Room}></Route>
                   </Switch>
                 </Content>
                 <Footer style={{ textAlign: 'center' }}>Created by wuweichao</Footer>

@@ -1,16 +1,11 @@
-import React, { ReactPropTypes } from 'react'
-import { Dispatch } from 'redux'
-import api from '../../api'
-import { UserDispatchAction, ActionTypeOfUser, Consumers, ConsumerColumn, ID } from '../../store/reducers/user'
-import { Table, Select, Button, Spin, Space, Modal, Form, Input, InputNumber } from 'antd'
-import { convertToDataSource, convertToColumn } from '../../util'
+import { Button, Form, Input, InputNumber, Modal, Select, Space, Spin, Table } from 'antd'
 import { TableRowSelection } from 'antd/lib/table/interface'
+import React from 'react'
+import api from '../../api'
+import { ActionTypeOfUser, Consumers, ID } from '../../store/reducers/user'
+import { convertToColumn, convertToDataSource } from '../../util'
+import { PropsType } from './types'
 const { Option } = Select
-type PropsType = {
-  dispatch: Dispatch<UserDispatchAction>
-  consumers: Consumers
-}
-
 type StateType = {
   dataSource: Array<{ [key: string]: string }>
   columns?: any[]
@@ -152,7 +147,7 @@ export default class extends React.Component<PropsType, StateType> {
                   <InputNumber min={1} />
                 </Form.Item>
                 <Form.Item
-                  name="roomtype"
+                  name="roomtypeid"
                   label="房间类型"
                   rules={[{ required: true, message: "请选择房间类型"}]}
                 >
@@ -173,7 +168,7 @@ export default class extends React.Component<PropsType, StateType> {
   async componentDidMount() {
     await this.fetchColumns()
     await this.fetchConsumers()
-    const dsource = convertToDataSource(this.props.consumers.columns)
+    const dsource = convertToDataSource(this.props.consumers.columns,'id')
     const cols = convertToColumn(this.props.consumers.columns_name)
     this.setState(({
       ...this.state,
