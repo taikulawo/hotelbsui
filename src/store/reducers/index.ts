@@ -1,6 +1,10 @@
 import { combineReducers, Action, Reducer, AnyAction } from "redux";
-const initialState = { count: 0, loading: true }
-
+import user, { StateOfInitial } from './user'
+const initialState: indexTypeOfState = { count: 0, loading: true }
+export type indexTypeOfState = {
+  count: number
+  loading: boolean
+}
 function index(state = initialState, action: AnyAction) {
   switch (action.type) {
     case 'PLUS_COUNT':
@@ -14,5 +18,11 @@ function index(state = initialState, action: AnyAction) {
 
 
 export default combineReducers({
-  index
+  index,
+  user
 })
+
+export type TypeOfState = {
+  user: StateOfInitial,
+  index: indexTypeOfState
+}

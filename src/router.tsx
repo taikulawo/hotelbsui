@@ -1,7 +1,7 @@
 import React from 'react'
-import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import { connect } from 'react-redux'
-import { Layout, Menu, Breadcrumb } from 'antd';
+import { Layout, Menu } from 'antd';
 import {
   DesktopOutlined,
   PieChartOutlined,
@@ -9,7 +9,10 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-const Router = BrowserRouter
+import User from './components/user';
+import Consumer from './components/consumer';
+import Home from './components/home'
+import Staff from './components/staff';
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 export default connect()(class extends React.Component {
@@ -26,68 +29,62 @@ export default connect()(class extends React.Component {
     return (
       <React.Fragment>
         <Router>
-          <Switch>
-            <React.Fragment>
-              <Layout style={{ minHeight: '100vh' }}>
-                <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
-                  <div className="logo" />
-                  <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-                    <Menu.Item key="1" style={{
-                      marginTop: '64px'
-                    }}>
+          <React.Fragment>
+            <Layout style={{ minHeight: '100vh' }}>
+              <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse} style={{
+                background: '#304156'
+              }}>
+                <div className="logo" />
+                <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" style={{
+                  userSelect: 'none'
+                }} selectedKeys={[window.location.pathname]}>
+                  <Menu.Item key="/">
+                    <Link to="/">
                       <PieChartOutlined />
-                      <span>Option 1</span>
+                      <span>主页</span>
+                    </Link>
+                  </Menu.Item>
+                  <SubMenu
+                    key="/user"
+                    title={
+                      <span>
+                        <Link to="/user" style={{
+                          display: 'block'
+                        }}>
+                          <PieChartOutlined />
+                          <span>用户</span>
+                        </Link>
+                      </span>
+                    }
+                  >
+                    <Menu.Item key="/user/consumers">
+                      <Link to="/user/consumers">
+                        <PieChartOutlined />
+                        <span>旅客</span>
+                      </Link>
                     </Menu.Item>
-                    <Menu.Item key="2">
-                      <DesktopOutlined />
-                      <span>Option 2</span>
-                    </Menu.Item>
-                    <SubMenu
-                      key="sub1"
-                      title={
-                        <span>
-                          <UserOutlined />
-                          <span>User</span>
-                        </span>
-                      }
-                    >
-                      <Menu.Item key="3">Tom</Menu.Item>
-                      <Menu.Item key="4">Bill</Menu.Item>
-                      <Menu.Item key="5">Alex</Menu.Item>
-                    </SubMenu>
-                    <SubMenu
-                      key="sub2"
-                      title={
-                        <span>
-                          <TeamOutlined />
-                          <span>Team</span>
-                        </span>
-                      }
-                    >
-                      <Menu.Item key="6">Team 1</Menu.Item>
-                      <Menu.Item key="8">Team 2</Menu.Item>
-                    </SubMenu>
-                    <Menu.Item key="9">
-                      <FileOutlined />
-                    </Menu.Item>
-                  </Menu>
-                </Sider>
-                <Layout className="site-layout">
-                  <Header className="site-layout-background" style={{ padding: 0 }} />
-                  <Content style={{ margin: '0 16px' }}>
-                    <Breadcrumb style={{ margin: '16px 0' }}>
-                      <Breadcrumb.Item>User</Breadcrumb.Item>
-                      <Breadcrumb.Item>Bill</Breadcrumb.Item>
-                    </Breadcrumb>
-                    <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
-                      Bill is a cat.
-            </div>
-                  </Content>
-                  <Footer style={{ textAlign: 'center' }}>Created by wuweichao</Footer>
-                </Layout>
+                    <Menu.Item key="/user/staffs">
+                      <Link to="/user/staffs">
+                        <PieChartOutlined />
+                        <span>员工</span>
+                      </Link></Menu.Item>
+                  </SubMenu>
+                </Menu>
+              </Sider>
+              <Layout className="site-layout">
+                <Header className="site-layout-background" style={{ padding: 0 }} />
+                <Content style={{ margin: '0 16px' }}>
+                  <Switch>
+                    <Route path="/user" component={User} exact></Route>
+                    <Route path="/user/consumers" component={Consumer}></Route>
+                    <Route path="/user/staffs" component={Staff}></Route>
+                    <Route path="/" component={Home}></Route>
+                  </Switch>
+                </Content>
+                <Footer style={{ textAlign: 'center' }}>Created by wuweichao</Footer>
               </Layout>
-            </React.Fragment>
-          </Switch>
+            </Layout>
+          </React.Fragment>
         </Router>
       </React.Fragment>
     );
