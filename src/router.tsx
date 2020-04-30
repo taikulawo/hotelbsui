@@ -73,7 +73,7 @@ export default connect()(class extends React.Component {
               </Sider>
               <Layout className="site-layout">
                 <Header className="site-layout-background" style={{ padding: 0 }} />
-                <Content style={{ margin: '0 16px' }}>
+                <Content className="display-content" style={{ margin: '0 16px' }}>
                   <Switch>
                     <Route path="/user" component={User} exact></Route>
                     <Route path="/user/consumers" component={Consumer}></Route>

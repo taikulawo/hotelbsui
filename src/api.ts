@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export interface columns {
-  [key: string]: string | number
+  [key: string]: string
 }
 
 export interface APIResponse {
@@ -10,8 +10,9 @@ export interface APIResponse {
 }
 
 class client {
-  host: string
-  port: number
+  private host: string
+  private port: number
+  private apiUrl = (path: string) => `http://${this.host}:${this.port}/${path}`
   constructor(host: string) {
     this.host = host
     if (process.env.NODE_ENV === 'production') {
@@ -21,7 +22,7 @@ class client {
     }
   }
 
-  async apiGo(method: "GET" | "POST" | "DELETE", url: string, data?: Object): Promise<APIResponse> {
+  private async apiGo(method: "GET" | "POST" | "DELETE", url: string, data?: Object): Promise<APIResponse> {
     let res = await axios.request({
       method,
       data,
@@ -31,12 +32,6 @@ class client {
       throw new Error(res.data)
     return res.data
   }
-  apiUrl = (path: string) => `http://${this.host}:${this.port}/${path}`
-  async fetchUser(fullpath: string): Promise<APIResponse> {
-    const url = this.apiUrl(fullpath)
-    return await this.apiGo("GET", url)
-  }
-
   async querySingle(table: string, id: string): Promise<APIResponse> {
     const url = this.apiUrl(`${table}/${id}`)
     return await this.apiGo("GET", url)
@@ -81,27 +76,16 @@ class client {
     }))
   }
 
-  async fetchColumns(table: string) {
+  async fetchColumns(table: string): Promise<Array<string>> {
     const url = this.apiUrl(`${table}?columns=true`)
-    let data = await this.apiGo("GET", url)
-    let columns = []
+    let { data } = await this.apiGo("GET", url)
+    let cols:string[] = []
     if (typeof data !== 'undefined' && Array.isArray(data)) {
-      columns = data.map(c => c['COLUMN_NAME'])
+      cols = data.map(c => c['COLUMN_NAME'])
     }
-    return columns
+    return cols
   }
 }
 
-let c: client | null = null
-
-/**
- * 
- * @param {*} host 
- * @returns {client} c
- */
-export default function (host: string) {
-  if (c !== null)
-    return c
-  c = new client(host)
-  return c
-}
+const c: client = new client('apibs.chaochaogege.net')
+export default c

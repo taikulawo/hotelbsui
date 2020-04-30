@@ -5,29 +5,35 @@ export interface Any {
   [key: string]: any
 }
 
-export interface ConsumerRow extends Any {
+export interface ConsumerColumn extends Any {
   username: string
-  password: string
+  roomtypeid: string
   email: string
   sex: string
   phone: string
-  roooid: number
+  id: string
 }
 
-export interface StaffRow extends Any {
+export type User = Consumers | Staffs
+export type UserColumns = ConsumerColumn | StaffColumn
+export type ID = string
+export interface StaffColumn extends Any {
   username: string
-  role: string
+  email: string
+  sex: string
   phone: string
+  id: ID
+  role: string
 }
 
 export type Consumers = {
-  columns: Array<string>,
-  rows: Array<ConsumerRow>
+  columns_name: Array<string>,
+  columns: Array<ConsumerColumn>
 }
 
 export type Staffs = {
-  columns: Array<string>,
-  rows: Array<StaffRow>
+  columns_name: Array<string>,
+  columns: Array<StaffColumn>
 }
 
 export interface StateOfInitial {
@@ -37,62 +43,64 @@ export interface StateOfInitial {
 
 const initialState: StateOfInitial = {
   consumers: {
-    columns: [],
-    rows: []
+    columns_name: [],
+    columns: []
   },
   staffs: {
-    columns: [],
-    rows: []
+    columns_name: [],
+    columns: []
   }
 }
 
 export enum ActionTypeOfUser {
-  'SET_CONSUMERS_ROWS',
   'SET_CONSUMERS_COLUMNS',
-  'SET_STAFFS_ROWS',
-  'SET_STAFFS_COLUMNS'
+  'SET_CONSUMERS_COL_NAME',
+  'SET_STAFFS_COLUMNS',
+  'SET_STAFFS_COL_NAME'
 }
 
 export interface UserDispatchAction extends Action {
-  data: Consumers | Staffs
+  data: any
+  type: ActionTypeOfUser
 }
 
 export default function (state = initialState, action: UserDispatchAction): StateOfInitial {
   // const dispatch = useDispatch<Dispatch<UserDispatchAction>>()
   switch (action.type) {
-    case ActionTypeOfUser.SET_CONSUMERS_ROWS: {
-      return {
-        ...state,
-        consumers: {
-          ...state.consumers,
-          rows: action.data.rows as Array<ConsumerRow>
-        }
-      }
-    }
     case ActionTypeOfUser.SET_CONSUMERS_COLUMNS: {
       return {
         ...state,
         consumers: {
           ...state.consumers,
-          columns: action.data.columns
+          columns: action.data.columns as Array<ConsumerColumn>
         }
       }
     }
-    case ActionTypeOfUser.SET_STAFFS_ROWS: {
+    case ActionTypeOfUser.SET_CONSUMERS_COL_NAME: {
       return {
         ...state,
-        staffs:{
+        consumers: {
           ...state.consumers,
-          rows: action.data.rows as Array<StaffRow>
+          columns_name: action.data.columns_name
         }
       }
     }
+   
     case ActionTypeOfUser.SET_STAFFS_COLUMNS: {
       return {
         ...state,
-        staffs:{
+        staffs: {
           ...state.consumers,
-          rows: action.data.rows as Array<StaffRow>
+          columns: action.data.columns as Array<StaffColumn>
+        }
+      }
+    }
+    case ActionTypeOfUser.SET_STAFFS_COL_NAME: {
+      return {
+        ...state,
+        staffs: {
+          ...state.consumers,
+          columns: action.data.columns as Array<StaffColumn>
         }
       }
     }
