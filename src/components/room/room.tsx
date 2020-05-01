@@ -6,6 +6,7 @@ import { Table, Select, Button, Spin, Space, Modal, Form, Input, InputNumber } f
 import { convertToDataSource, convertToColumn } from '../../util'
 import { TableRowSelection } from 'antd/lib/table/interface'
 import { Rooms, ActionTypeOfRoom, RoomDispatchAction } from '../../store/reducers/room'
+import { FormInstance } from 'antd/lib/form'
 const { Option } = Select
 type PropsType = {
   dispatch: Dispatch<RoomDispatchAction>
@@ -19,7 +20,8 @@ type StateType = {
   loading: boolean,
   modalVisiable: boolean,
   confirmLoading: boolean,
-  values: RoomValueType
+  values: RoomValueType,
+  form: React.RefObject<FormInstance>
 }
 
 /**
@@ -36,32 +38,35 @@ export default class extends React.Component<PropsType, StateType> {
       loading: false,
       modalVisiable: false,
       confirmLoading: false,
+      form: React.createRef<FormInstance>(),
       values: {
         chairs: 1,
         picurl: '',
-        roomtype: ''
+        roomtype: '',
+        roomtypeid: ''
       }
     }
   }
-
-  emptyValue: RoomValueType = {
+  asyncSet = (state: StateType): Promise<any> => new Promise(resolve => this.setState(state,resolve))
+  emptyValue = (): RoomValueType => ({
     chairs: 1,
     picurl: '',
-    roomtype: ''
-  }
+    roomtype: '',
+    roomtypeid: ''
+  })
 
   onSelectChange(selectedRowKeys: ID[]) {
     this.setState({ ...this.state, selectedRowKeys });
   }
 
   deleteRows = async () => {
-    this.setState({
+    await this.asyncSet({
       ...this.state,
       loading: true
     })
-    let source = this.state.dataSource
+    let source = [...this.state.dataSource]
     for (let i = 0; i < source.length; i++) {
-      if (source[i]['id'] in this.state.selectedRowKeys) {
+      if (this.state.selectedRowKeys.includes(source[i]['roomtypeid'])) {
         source.splice(i, 1)
       }
     }
@@ -70,36 +75,54 @@ export default class extends React.Component<PropsType, StateType> {
     })
     await Promise.all(promises)
     await this.fetchRooms()
+    debugger
     this.setState({
       ...this.state,
       dataSource: source,
       selectedRowKeys: [],
       loading: false
+    },() => {
+      this.forceUpdate()
     })
   }
 
   addRow = async () => {
-    this.toggleModal(true)
-    // this.setState({
-    //   ...this.state,
-    //   values: this.emptyValue
-    // })
-  }
-
-  toggleModal(ok: boolean) {
     this.setState({
       ...this.state,
-      modalVisiable: ok
+      modalVisiable: true,
+      values: this.emptyValue()
     })
   }
 
   handleModalOk = async () => {
+    try {
+      await this.state.form.current?.validateFields()
+    } catch (e) {
+      console.log(e)
+      return
+    }
     this.setState({
       ...this.state,
       confirmLoading: true
     }, async () => {
       const { data } = await api.insert('room', this.state.values)
-      let lastid = (data as any)['']
+      let lastid = (data as any)['lastId']
+      this.setState({
+        ...this.state,
+        confirmLoading: false,
+        modalVisiable: false
+      }, () => {
+        let v = this.state.values
+        const originDataSource = this.state.dataSource
+        v['roomtypeid'] = lastid
+        let converted = convertToDataSource([v], 'roomtypeid')
+        let newData = [...converted, ...originDataSource]
+        this.setState({
+          ...this.state,
+          dataSource: newData,
+          values: this.emptyValue()
+        })
+      })
     })
   }
   handleModalCancel = async () => {
@@ -107,7 +130,7 @@ export default class extends React.Component<PropsType, StateType> {
       ...this.state,
       modalVisiable: false,
       confirmLoading: false,
-      values: this.emptyValue
+      values: this.emptyValue()
     })
   }
 
@@ -141,13 +164,13 @@ export default class extends React.Component<PropsType, StateType> {
             <Table rowSelection={rowSelection} columns={this.state.columns} dataSource={this.state.dataSource} bordered>
             </Table>
             <Modal visible={this.state.modalVisiable} title="添加房间类型" onOk={this.handleModalOk} onCancel={this.handleModalCancel} confirmLoading={this.state.confirmLoading}>
-              <Form {...formItemLayout}>
+              <Form {...formItemLayout} ref={this.state.form}>
                 <Form.Item
                   name="roomtype"
                   label="房间类型"
                   rules={[{ required: true, message: "请输入房间类型" }]}
                 >
-                  <Input value={this.state.values.roomtype} onChange={e => this.state.values.roomtype = e.target.value} />
+                  <Input value={this.state.values.roomtype} onChange={e => this.setState({ ...this.state, values: { ...this.state.values, roomtype: e.target.value } })} />
                 </Form.Item>
                 <Form.Item name="chair" label="椅子" rules={[
                   {
@@ -155,14 +178,14 @@ export default class extends React.Component<PropsType, StateType> {
                     message: "输入房间椅子数量"
                   }
                 ]}>
-                  <InputNumber min={1} value={this.state.values.chairs} onChange={e => { this.state.values.chairs = e }} />
+                  <InputNumber min={1} value={this.state.values.chairs} onChange={e => this.setState({ ...this.state, values: { ...this.state.values, chairs: e } })} />
                 </Form.Item>
                 <Form.Item
                   name="picurl"
                   label="房间图片地址"
                   rules={[{ required: true, message: '房间图片' }]}
                 >
-                  <Input addonBefore={this.prefixSelector} style={{ width: '100%' }} onChange={e => { this.state.values.picurl = e.target.value }} />
+                  <Input value={this.state.values.picurl} style={{ width: '100%' }} onChange={e => this.setState({ ...this.state, values: { ...this.state.values, picurl: e.target.value } })} />
                 </Form.Item>
               </Form>
             </Modal>
@@ -175,7 +198,7 @@ export default class extends React.Component<PropsType, StateType> {
   async componentDidMount() {
     await this.fetchColumns()
     await this.fetchRooms()
-    const dsource = convertToDataSource(this.props.rooms.columns,'roomtypeid')
+    const dsource = convertToDataSource(this.props.rooms.columns, 'roomtypeid')
     const cols = convertToColumn(this.props.rooms.columns_name)
     this.setState(({
       ...this.state,
@@ -218,6 +241,7 @@ export type RoomModalProps = {
 }
 
 export type RoomValueType = {
+  roomtypeid: string
   chairs?: number
   roomtype: string
   picurl: string

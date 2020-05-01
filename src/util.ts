@@ -1,9 +1,7 @@
 import { Columns } from "./store/reducers/user"
-import { RoomColumn } from "./store/reducers/room"
 
 export function convertToDataSource(data: Array<Columns>, pk: string): Array<{ [key: string]: string }> {
-  debugger
-  let a = data.map((d:any) => ({
+  let a = data.map((d: any) => ({
     ...d,
     key: d[pk],
   }))

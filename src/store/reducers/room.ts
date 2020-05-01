@@ -25,7 +25,7 @@ export interface RoomDispatchAction extends Action {
 
 export interface RoomColumn {
   roomtypeid: string
-  chairs: number
+  chairs?: number
   roomtype: string,
   picurl: string
 }
