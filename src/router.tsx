@@ -37,7 +37,8 @@ export default connect()(class extends React.Component {
               }}>
                 <div className="logo" />
                 <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" style={{
-                  userSelect: 'none'
+                  userSelect: 'none',
+                  paddingTop: '64px'
                 }} selectedKeys={[window.location.pathname]}>
                   <Menu.Item key="/">
                     <Link to="/">
