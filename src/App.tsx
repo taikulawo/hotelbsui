@@ -1,6 +1,5 @@
 import React from 'react';
 import { Provider } from 'react-redux'
-import logo from './logo.svg';
 import createStore from './store'
 import Router from './router';
 import reducers from './store/reducers'

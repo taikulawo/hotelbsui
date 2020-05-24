@@ -6,5 +6,5 @@ function mapStateToProps(state: TypeOfState) {
   return {
     rooms: state.rooms
   }
-}
+} 
 export default connect(mapStateToProps)(Room)

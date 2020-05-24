@@ -1,9 +1,10 @@
-import React from 'react'
+import { connect } from "react-redux";
+import Staff from './staff'
+import { TypeOfState } from "../../store/reducers";
 
-export default class extends React.Component {
-  render() {
-    return (
-      <div>staff</div>
-    )
+function mapStateToProps(state: TypeOfState) {
+  return {
+    staffs: state.user.staffs
   }
 }
+export default connect(mapStateToProps)(Staff)

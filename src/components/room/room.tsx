@@ -75,7 +75,6 @@ export default class extends React.Component<PropsType, StateType> {
     })
     await Promise.all(promises)
     await this.fetchRooms()
-    debugger
     this.setState({
       ...this.state,
       dataSource: source,
@@ -157,8 +156,8 @@ export default class extends React.Component<PropsType, StateType> {
           }}>
             <div className="table-control">
               <Space>
-                <Button type="primary" onClick={this.addRow}>添加</Button>
-                <Button type="danger" onClick={this.deleteRows}>删除</Button>
+                <Button type="primary" onClick={this.addRow}>添加房间规格</Button>
+                <Button type="danger" onClick={this.deleteRows}>删除已有房间规格</Button>
               </Space>
             </div>
             <Table rowSelection={rowSelection} columns={this.state.columns} dataSource={this.state.dataSource} bordered>
