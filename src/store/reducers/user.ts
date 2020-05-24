@@ -91,7 +91,7 @@ export default function (state = initialState, action: UserDispatchAction): Stat
       return {
         ...state,
         staffs: {
-          ...state.consumers,
+          ...state.staffs,
           columns: action.data.columns as Array<StaffColumn>
         }
       }
@@ -100,8 +100,8 @@ export default function (state = initialState, action: UserDispatchAction): Stat
       return {
         ...state,
         staffs: {
-          ...state.consumers,
-          columns: action.data.columns as Array<StaffColumn>
+          ...state.staffs,
+          columns_name: action.data.columns_name
         }
       }
     }

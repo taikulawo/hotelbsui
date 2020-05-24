@@ -15,3 +15,16 @@ code {
 #root {
   height: 100%;
 }
+
+.display-content {
+  max-width: 70vw;
+  width: 70vw;
+  align-self: center;
+}
+
+.ant-table-content .ant-table-cell{
+  flex:1;
+}
+.ant-table-content tr {
+  display: flex;
+}

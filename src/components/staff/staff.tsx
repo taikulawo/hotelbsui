@@ -169,7 +169,7 @@ export default class extends React.Component<PropsType, StateType> {
     await this.fetchColumns()
     await this.fetchStaffs()
     const dsource = convertToDataSource(this.props.staffs.columns,'id')
-    const cols = convertToColumn(this.props.staffs.columns_name)
+    const cols = convertToColumn(this.props.staffs.columns_name,'id')
     this.setState(({
       ...this.state,
       columns: cols,
@@ -197,7 +197,7 @@ export default class extends React.Component<PropsType, StateType> {
     this.props.dispatch({
       type: ActionTypeOfUser.SET_STAFFS_COL_NAME,
       data: {
-        staffs_name: cols
+        columns_name: cols
       }
     })
   }
