@@ -198,7 +198,7 @@ export default class extends React.Component<PropsType, StateType> {
     await this.fetchColumns()
     await this.fetchRooms()
     const dsource = convertToDataSource(this.props.rooms.columns, 'roomtypeid')
-    const cols = convertToColumn(this.props.rooms.columns_name)
+    const cols = convertToColumn(this.props.rooms.columns_name,'roomtypeid')
     this.setState(({
       ...this.state,
       columns: cols,

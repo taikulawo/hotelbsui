@@ -12,9 +12,9 @@ export function convertToDataSource(data: Array<Columns>, pk: string): Array<{ [
  * 
  * @param {Array} data 
  */
-export function convertToColumn(keys: Array<string>): any[] {
+export function convertToColumn(keys: Array<string>,pk: string): any[] {
   // remove id column
-  keys = removeFromArray(keys, 'id')
+  keys = removeFromArray(keys, pk)
   let columns = keys.map(k => ({
     title: k,
     dataIndex: k,
