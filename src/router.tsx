@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import { connect } from 'react-redux'
 import { Layout, Menu } from 'antd';
@@ -20,12 +20,19 @@ const { SubMenu } = Menu;
 export default connect()(class extends React.Component {
   state = {
     collapsed: false,
+    hasLogined: false
   };
 
   onCollapse = (collapsed: boolean) => {
     console.log(collapsed);
     this.setState({ collapsed });
   };
+  setLogin(l: boolean) {
+    this.setState({
+      ...this.state,
+      hasLogined: l
+    })
+  }
 
   render() {
     return (
@@ -33,8 +40,8 @@ export default connect()(class extends React.Component {
         <Router>
           <React.Fragment>
             {
-              userIsLogin ? (
-                <Login></Login>
+              !this.state.hasLogined ? (
+                <Login cb={(c) => this.setLogin(c)}></Login>
               ) : (
                   <Layout style={{ minHeight: '100vh' }}>
                     <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse} style={{
@@ -113,4 +120,8 @@ export function userIsLogin(): boolean {
     return true
   }
   return false
+}
+
+export function useLogin(): any {
+  const [login, setLogin] = useState(false)
 }
