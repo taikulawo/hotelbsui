@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import client, { STATUS_FAILED_NEED_LOGIN } from '../../api'
 import "./index.sass"
-import { message, Input } from "antd";
+import { message, Input, notification } from "antd";
+import { SmileOutlined } from '@ant-design/icons';
 import { useObservable } from "../../util";
 export type PropsType = {
   cb: (l: boolean) => void
@@ -12,19 +13,43 @@ export type PropsType = {
 export type StateType = {
   setLogin: (logined: boolean) => void
 }
-
 const isValidUser = (c: number): boolean => (STATUS_FAILED_NEED_LOGIN & c) === 0
-
+const DEFAULT_JWT_TOKEN = 'jwt_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1am4tYnMtc2VydmVyIn0.nArVsN2xlbwjFEFqVCIwxOK-uBXCoyfwX1Cer2-cvcQ; Path=/; Domain=apibs.chaochaogege.net'
 export default function (props: PropsType) {
   const setLogin = props.cb
   const obj = useObservable({
     username: '',
     password: ''
   })
+
+  async function showSuccess() {
+    await message.loading("登录成功，正在跳转", 1)
+    await message.success("登录成功😀", 1)
+  }
+
+  function toHome() {
+    setLogin(true)
+    let { from } = { from: { pathname: "/" } }
+    props.history.replace(from)
+  }
   function loginClick(e: React.FormEvent<HTMLButtonElement>) {
     e.preventDefault();
     // 这里处理登录相关的请求
     (async function () {
+      if ("testuser" === obj.username && "testpassword" === obj.password) {
+        document.cookie = DEFAULT_JWT_TOKEN
+        await showSuccess()
+        toHome()
+        notification.open({
+          message: '注意',
+          description:
+          "你使用的是测试账号，受限于Set-Cookie的设置策略，无法跨域设置TOKEN来访问被保护的API接口" + 
+          "。\n当你接下来点击响应的管理面板时，由于没有对应的权限，前端获取不到数据，页面会崩溃",
+          icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+          duration: null
+        });
+        return
+      }
       let { code, data } = await client.apiGo("GET", client.apiUrl(`api/login?username=${obj.username}&password=${obj.password}`))
       if (!isValidUser(code)) {
         message.error({
@@ -32,9 +57,8 @@ export default function (props: PropsType) {
         })
         return
       }
-      setLogin(true)
-      let { from } = props.location.state || { from: { pathname: "/" } }
-      props.history.replace(from)
+      await showSuccess()
+      toHome()
     }())
   }
   useEffect(() => {
