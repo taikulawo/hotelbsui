@@ -5,9 +5,16 @@ import { message } from "antd";
 export type PropsType = {
   cb: (l: boolean) => void
 }
-export default class extends React.Component<PropsType, {}> {
+
+export type StateType = {
+  setLogin: (logined: boolean) => void
+}
+export default class extends React.Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props)
+    this.state = {
+      setLogin: props.cb
+    }
   }
   render() {
     return (
@@ -38,7 +45,7 @@ export default class extends React.Component<PropsType, {}> {
     e.preventDefault();
   }
   async componentDidMount() {
-    const { code, data } = await client.apiGo("GET", client.apiUrl("/users"))
+    const { code } = await client.apiGo("GET", client.apiUrl("users"))
     if ((code & STATUS_FAILED_NEED_LOGIN) !== 0) {
       // need login
       message.error({

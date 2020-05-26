@@ -1,5 +1,4 @@
-import { AnyAction, Action, Dispatch } from "redux";
-import { useDispatch } from "react-redux";
+import { Action } from "redux";
 import { RoomColumn } from "./room";
 
 export interface Any {
@@ -86,7 +85,7 @@ export default function (state = initialState, action: UserDispatchAction): Stat
         }
       }
     }
-   
+
     case ActionTypeOfUser.SET_STAFFS_COLUMNS: {
       return {
         ...state,

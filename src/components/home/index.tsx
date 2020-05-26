@@ -1,5 +1,4 @@
 import React, { CSSProperties } from 'react'
-import { Button, Modal } from 'antd'
 
 export default class extends React.Component {
   render() {

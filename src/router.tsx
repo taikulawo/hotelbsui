@@ -1,13 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { BrowserRouter as Router, Link, Route, Switch, Redirect } from "react-router-dom";
-import { connect, ConnectedComponent } from 'react-redux'
+import { connect } from 'react-redux'
 import { Layout, Menu } from 'antd';
 import {
-  DesktopOutlined,
   PieChartOutlined,
-  FileOutlined,
-  TeamOutlined,
-  UserOutlined,
 } from '@ant-design/icons';
 import User from './components/user';
 import Consumer from './components/consumer';

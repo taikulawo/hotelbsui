@@ -183,7 +183,7 @@ export default class extends React.Component<PropsType, StateType> {
   }
 
   async fetchStaffs() {
-    let { code, data } = await api.queryAll('staff')
+    let { data } = await api.queryAll('staff')
     this.props.dispatch({
       type: ActionTypeOfUser.SET_STAFFS_COLUMNS,
       data: {

@@ -1,4 +1,4 @@
-import { combineReducers, Action, Reducer, AnyAction } from "redux";
+import { combineReducers, AnyAction } from "redux";
 import user, { StateOfInitial as StateOfInitialUser } from './user'
 import rooms, { StateOfInitial } from './room'
 const initialState: indexTypeOfState = { count: 0, loading: true }

@@ -211,7 +211,7 @@ export default class extends React.Component<PropsType, StateType> {
   }
 
   async fetchRooms() {
-    let { code, data } = await api.queryAll('room')
+    let { data } = await api.queryAll('room')
     this.props.dispatch({
       type: ActionTypeOfRoom.SET_ROOMS_COLUMNS,
       data: {
@@ -245,44 +245,6 @@ export type RoomValueType = {
   roomtype: string
   picurl: string
 }
-function popup(props: RoomModalProps) {
-  const prefixSelector = (
-    <Form.Item name="prefix" noStyle>
-      <Select style={{ width: 70 }}>
-        <Option value="86">+86</Option>
-        <Option value="87">+87</Option>
-      </Select>
-    </Form.Item>
-  )
-  return (
-    <Modal visible={props.visiable} title="添加房间类型" onOk={props.handleOk} onCancel={props.handleCancel} confirmLoading={props.confirmLoading}>
-      <Form {...formItemLayout}>
-        <Form.Item
-          name="roomtype"
-          label="房间类型"
-          rules={[{ required: true, message: "请输入房间类型" }]}
-        >
-          <Input value={props.values.roomtype} onChange={e => { props.values.roomtype = e.target.value }} />
-        </Form.Item>
-        <Form.Item name="chair" label="椅子" rules={[
-          {
-            required: true,
-            message: "输入房间椅子数量"
-          }
-        ]}>
-          <InputNumber min={1} value={props.values.chairs} />
-        </Form.Item>
-        <Form.Item
-          name="picurl"
-          label="房间图片地址"
-          rules={[{ required: true, message: '房间图片' }]}
-        >
-          <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
-        </Form.Item>
-      </Form>
-    </Modal>
-  )
-}
 
 const formItemLayout = {
   labelCol: {
@@ -292,17 +254,5 @@ const formItemLayout = {
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 16 },
-  },
-};
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 8,
-    },
   },
 };
