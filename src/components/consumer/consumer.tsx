@@ -149,11 +149,11 @@ export default class extends React.Component<PropsType, StateType> {
                 <Form.Item
                   name="roomtypeid"
                   label="房间类型"
-                  rules={[{ required: true, message: "请选择房间类型"}]}
+                  rules={[{ required: true, message: "请选择房间类型" }]}
                 >
                   <Select>
                     {
-                      
+
                     }
                   </Select>
                 </Form.Item>
@@ -168,8 +168,8 @@ export default class extends React.Component<PropsType, StateType> {
   async componentDidMount() {
     await this.fetchColumns()
     await this.fetchConsumers()
-    const dsource = convertToDataSource(this.props.consumers.columns,'id')
-    const cols = convertToColumn(this.props.consumers.columns_name,'id')
+    const dsource = convertToDataSource(this.props.consumers.columns, 'id')
+    const cols = convertToColumn(this.props.consumers.columns_name, 'id')
     this.setState(({
       ...this.state,
       columns: cols,
@@ -183,7 +183,7 @@ export default class extends React.Component<PropsType, StateType> {
   }
 
   async fetchConsumers() {
-    let { code, data } = await api.queryAll('consumer')
+    let { data } = await api.queryAll('consumer')
     this.props.dispatch({
       type: ActionTypeOfUser.SET_CONSUMERS_COLUMNS,
       data: {

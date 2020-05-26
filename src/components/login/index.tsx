@@ -1,10 +1,12 @@
 import React from "react";
+import client, { STATUS_FAILED_NEED_LOGIN } from '../../api'
 import "./index.sass"
+import { message } from "antd";
 export type PropsType = {
   cb: (l: boolean) => void
 }
-export default class extends React.Component<PropsType,{}> {
-  constructor(props:PropsType){
+export default class extends React.Component<PropsType, {}> {
+  constructor(props: PropsType) {
     super(props)
   }
   render() {
@@ -34,5 +36,14 @@ export default class extends React.Component<PropsType,{}> {
   }
   loginClick(e: React.FormEvent<HTMLButtonElement>) {
     e.preventDefault();
+  }
+  async componentDidMount() {
+    const { code, data } = await client.apiGo("GET", client.apiUrl("/users"))
+    if ((code & STATUS_FAILED_NEED_LOGIN) !== 0) {
+      // need login
+      message.error({
+        content: "自动登录失败，你还没有登录😎"
+      })
+    }
   }
 }

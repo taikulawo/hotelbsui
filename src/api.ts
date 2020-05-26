@@ -1,26 +1,29 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 export const STATUS_SUCCEED = 1;
-export const STATUS_FAILED = 2;
-export const STATUS_FAILED_SQL = 4; //SQL 操作出错
-export const STATUS_FAILED_NO_ENOUGH_ARGS = 8;
-export const STATUS_FAILED_WRONG_POST_DATA = 16;
-export const STATUS_FAILED_WRONG_ID = 32;
-export const STATUS_FAILED_RECORD_EXISTS = 64;
+export const STATUS_FAILED = 1 << 1;
+export const STATUS_FAILED_SQL = 1 << 2; //SQL 操作出错
+export const STATUS_FAILED_NO_ENOUGH_ARGS = 1 << 3;
+export const STATUS_FAILED_WRONG_POST_DATA = 1 << 4;
+export const STATUS_FAILED_WRONG_ID = 1 << 5;
+export const STATUS_FAILED_RECORD_EXISTS = 1 << 6;
+export const STATUS_FAILED_NEED_LOGIN = 1 << 7
 
 export interface columns {
   [key: string]: string
 }
 
+export type ResponseData = Object | Array<columns>
+
 export interface APIResponse {
   code: number,
-  data?: Object | Array<columns>
+  data: ResponseData
 }
 
 class client {
-  private host: string
-  private port: number
-  private apiUrl = (path: string) => `http://${this.host}:${this.port}/${path}`
+  public host: string
+  public port: number
+  public apiUrl = (path: string) => `http://${this.host}:${this.port}/${path}`
   constructor(host: string) {
     this.host = host
     if (process.env.NODE_ENV === 'production') {
@@ -30,15 +33,12 @@ class client {
     }
   }
 
-  private async apiGo(method: "GET" | "POST" | "DELETE", url: string, data?: Object): Promise<APIResponse> {
-    let res = await axios.request({
+  public async apiGo(method: "GET" | "POST" | "DELETE", url: string, data?: Object): Promise<APIResponse> {
+    let res = await axios.request<any, AxiosResponse<APIResponse>>({
       method,
       data,
       url
     })
-    const { code, data: resData } = res.data
-    if (res.status !== 200 || (code & STATUS_SUCCEED) !== 1)
-      throw new Error(res.data)
     return res.data
   }
   async querySingle(table: string, id: string): Promise<APIResponse> {
@@ -62,14 +62,16 @@ class client {
   }
   async deleteSingle(table: string, id: string) {
     const url = this.apiUrl(`${table}/${id}`)
-    return await this.apiGo("DELETE", url)
+    const { data } = await this.apiGo("DELETE", url)
+    return data
   }
 
   async update(table: string, id: string, data: Object) {
     const url = this.apiUrl(`${table}/${id}`)
-    return await this.apiGo("POST", url, JSON.stringify({
+    const { data: d1 } =await this.apiGo("POST", url, JSON.stringify({
       data
     }))
+    return d1
   }
 
   /**
@@ -78,7 +80,7 @@ class client {
    * @param {*} data 
    * @returns {code:<number>,lastId:<number>}
    */
-  async insert(table: string, data: Object) {
+  async insert(table: string, data: Object): Promise<APIResponse>{
     const url = this.apiUrl(`${table}`)
     return await this.apiGo("POST", url, JSON.stringify({
       data

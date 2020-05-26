@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
-import { connect } from 'react-redux'
+import { BrowserRouter as Router, Link, Route, Switch, Redirect } from "react-router-dom";
+import { connect, ConnectedComponent } from 'react-redux'
 import { Layout, Menu } from 'antd';
 import {
   DesktopOutlined,
@@ -17,11 +17,20 @@ import Room from './components/room';
 import Login from './components/login'
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
-export default connect()(class extends React.Component {
-  state = {
-    collapsed: false,
-    hasLogined: false
-  };
+
+export type PropsType = {}
+export type StateType = {
+  collapsed: boolean
+  hasLogined: boolean
+}
+export default connect()(class extends React.Component<any, StateType> {
+  constructor(props: any) {
+    super(props)
+    this.state = {
+      collapsed: false,
+      hasLogined: false
+    };
+  }
 
   onCollapse = (collapsed: boolean) => {
     console.log(collapsed);
@@ -33,16 +42,34 @@ export default connect()(class extends React.Component {
       hasLogined: l
     })
   }
-
+  ProtectedRouter = ({ children, ...rest }: any) => {
+    return (
+      <Route {...rest} render={({ location }) =>
+        this.state.hasLogined ? (
+          children
+        ) : (
+            <Redirect to={{
+              pathname: "/login",
+              state: {
+                from: location
+              }
+            }}></Redirect>
+          )
+      }>
+      </Route>
+    )
+  }
   render() {
     return (
-      <React.Fragment>
+      <React.Fragment >
         <Router>
           <React.Fragment>
-            {
-              !this.state.hasLogined ? (
-                <Login cb={(c) => this.setLogin(c)}></Login>
-              ) : (
+            <Switch>
+              <Route exact path="/login">
+                <Login cb={c => this.setLogin(c)}></Login>
+              </Route>
+              <this.ProtectedRouter>
+                <Route>
                   <Layout style={{ minHeight: '100vh' }}>
                     <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse} style={{
                       background: '#304156'
@@ -96,18 +123,29 @@ export default connect()(class extends React.Component {
                       <Header className="site-layout-background" style={{ padding: 0 }} />
                       <Content className="display-content" style={{ margin: '0 16px' }}>
                         <Switch>
-                          <Route path="/user" component={User} exact></Route>
-                          <Route path="/user/consumers" exact component={Consumer}></Route>
-                          <Route path="/user/staffs" exact component={Staff}></Route>
-                          <Route path="/" exact component={Home}></Route>
-                          <Route path="/room" component={Room}></Route>
+                          <this.ProtectedRouter path="/user" exact>
+                            <User></User>
+                          </this.ProtectedRouter>
+                          <this.ProtectedRouter path="/user/consumers" exact>
+                            <Consumer></Consumer>
+                          </this.ProtectedRouter>
+                          <this.ProtectedRouter path="/user/staffs" exact>
+                            <Staff></Staff>
+                          </this.ProtectedRouter>
+                          <this.ProtectedRouter path="/" exact>
+                            <Home></Home>
+                          </this.ProtectedRouter>
+                          <this.ProtectedRouter exact path="/room">
+                            <Room></Room>
+                          </this.ProtectedRouter>
                         </Switch>
                       </Content>
                       <Footer style={{ textAlign: 'center' }}>Created by wuweichao</Footer>
                     </Layout>
                   </Layout>
-                )
-            }
+                </Route>
+              </this.ProtectedRouter>
+            </Switch>
           </React.Fragment>
         </Router>
       </React.Fragment >
@@ -115,13 +153,3 @@ export default connect()(class extends React.Component {
   }
 })
 
-export function userIsLogin(): boolean {
-  if (document.cookie.indexOf("jwt_token") !== -1) {
-    return true
-  }
-  return false
-}
-
-export function useLogin(): any {
-  const [login, setLogin] = useState(false)
-}
