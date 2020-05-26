@@ -44,7 +44,7 @@ export default function (props: PropsType) {
           message: '注意',
           description:
           "你使用的是测试账号，受限于Set-Cookie的设置策略，无法跨域设置TOKEN来访问被保护的API接口" + 
-          "。\n当你接下来点击响应的管理面板时，由于没有对应的权限，前端获取不到数据，页面会崩溃",
+          "。\n当你接下来点击响应的管理面板时，由于没有对应的权限，前端获取不到数据，页面可能会崩溃",
           icon: <SmileOutlined style={{ color: '#108ee9' }} />,
           duration: null
         });
