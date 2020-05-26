@@ -3,7 +3,7 @@ import { TableRowSelection } from 'antd/lib/table/interface'
 import React from 'react'
 import api from '../../api'
 import { ActionTypeOfUser, Staffs, ID } from '../../store/reducers/user'
-import { convertToColumn, convertToDataSource } from '../../util'
+import { convertToColumn, convertToDataSource, useObservable } from '../../util'
 import { PropsType } from './types'
 const { Option } = Select
 type StateType = {
@@ -12,7 +12,8 @@ type StateType = {
   selectedRowKeys: ID[]
   loading: boolean,
   modalVisiable: boolean,
-  confirmLoading: false
+  confirmLoading: false,
+  inputValue: any
 }
 
 /**
@@ -28,7 +29,12 @@ export default class extends React.Component<PropsType, StateType> {
       selectedRowKeys: [],
       loading: false,
       modalVisiable: false,
-      confirmLoading: false
+      confirmLoading: false,
+      inputValue: {
+        username: '',
+        email: '',
+        phone: ''
+      }
     }
   }
 
@@ -72,7 +78,10 @@ export default class extends React.Component<PropsType, StateType> {
   }
 
   handleModalOk = async () => {
-
+    await api.insert('staff', {
+      ...this.state.inputValue
+    })
+    this.toggleModal(false)
   }
   handleModalCancel = async () => {
     this.setState({
@@ -119,7 +128,7 @@ export default class extends React.Component<PropsType, StateType> {
                     message: "输入用户名"
                   }
                 ]}>
-                  <Input />
+                  <Input onChange={i => this.state.inputValue.username = i.target.value} />
                 </Form.Item>
                 <Form.Item name="email" label="电子邮箱" rules={[
                   {
@@ -130,32 +139,14 @@ export default class extends React.Component<PropsType, StateType> {
                     message: "不是一个合法的电子邮件地址"
                   }
                 ]}>
-                  <Input />
+                  <Input type="email" onChange={i => this.state.inputValue.email = i.target.value} />
                 </Form.Item>
                 <Form.Item
                   name="phone"
                   label="Phone Number"
                   rules={[{ required: true, message: 'Please input your phone number!' }]}
                 >
-                  <Input addonBefore={this.prefixSelector} style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item
-                  name="roomnum"
-                  label="房间号"
-                  rules={[{ required: true, message: '请输入房间号' }]}
-                >
-                  <InputNumber min={1} />
-                </Form.Item>
-                <Form.Item
-                  name="roomtypeid"
-                  label="房间类型"
-                  rules={[{ required: true, message: "请选择房间类型"}]}
-                >
-                  <Select>
-                    {
-                      
-                    }
-                  </Select>
+                  <Input addonBefore={this.prefixSelector} onChange={i => this.state.inputValue.phone} style={{ width: '100%' }} />
                 </Form.Item>
               </Form>
             </Modal>
@@ -168,8 +159,8 @@ export default class extends React.Component<PropsType, StateType> {
   async componentDidMount() {
     await this.fetchColumns()
     await this.fetchStaffs()
-    const dsource = convertToDataSource(this.props.staffs.columns,'id')
-    const cols = convertToColumn(this.props.staffs.columns_name,'id')
+    const dsource = convertToDataSource(this.props.staffs.columns, 'id')
+    const cols = convertToColumn(this.props.staffs.columns_name, 'id')
     this.setState(({
       ...this.state,
       columns: cols,

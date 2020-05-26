@@ -32,7 +32,8 @@ export interface RoomColumn {
 
 export enum ActionTypeOfRoom {
   'SET_ROOMS_COLUMNS',
-  'SET_ROOMS_COLUMNS_NAME'
+  'SET_ROOMS_COLUMNS_NAME',
+  'FETCH_ALL_COLUMNS'
 }
 
 export default function (state = initialState, action: RoomDispatchAction): StateOfInitial {

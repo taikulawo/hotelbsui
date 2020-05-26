@@ -37,9 +37,10 @@ export default function (props: PropsType) {
     // 这里处理登录相关的请求
     (async function () {
       if ("testuser" === obj.username && "testpassword" === obj.password) {
-        document.cookie = DEFAULT_JWT_TOKEN
+        // document.cookie = DEFAULT_JWT_TOKEN
         await showSuccess()
         toHome()
+        localStorage.setItem("jwt_token",DEFAULT_JWT_TOKEN)
         notification.open({
           message: '注意',
           description:
@@ -59,6 +60,11 @@ export default function (props: PropsType) {
       }
       await showSuccess()
       toHome()
+      if(!Array.isArray(data)) {
+        localStorage.setItem("jwt_token",data["jwt_token"])
+      }else {
+        console.error(`Isn't a Object ${data}`, data)
+      }
     }())
   }
   useEffect(() => {

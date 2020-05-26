@@ -13,7 +13,7 @@ export interface columns {
   [key: string]: string
 }
 
-export type ResponseData = Object | Array<columns>
+export type ResponseData = any | Array<columns>
 
 export interface APIResponse {
   code: number,

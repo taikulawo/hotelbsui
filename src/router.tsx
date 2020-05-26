@@ -5,6 +5,7 @@ import { Layout, Menu } from 'antd';
 import {
   PieChartOutlined,
 } from '@ant-design/icons';
+import { createBrowserHistory } from 'history'
 import User from './components/user';
 import Consumer from './components/consumer';
 import Home from './components/home'
@@ -17,19 +18,23 @@ const { SubMenu } = Menu;
 export type PropsType = {}
 export type StateType = {
   collapsed: boolean
-  hasLogined: boolean
+  hasLogined: boolean,
+  to: string
 }
-export default connect()(class extends React.Component<any, StateType> {
+
+class router extends React.Component<any, StateType> {
   constructor(props: any) {
     super(props)
     let isLg = false
-    if (document.cookie.indexOf("jwt_token") >= 0) {
+    if (localStorage.getItem("jwt_token") !== null) {
       isLg = true
     }
     this.state = {
       collapsed: false,
-      hasLogined: isLg
+      hasLogined: isLg,
+      to: '/'
     };
+    
   }
 
   onCollapse = (collapsed: boolean) => {
@@ -62,86 +67,86 @@ export default connect()(class extends React.Component<any, StateType> {
     return (
       <Router>
         <Switch>
-            {
-              this.state.hasLogined || (
-                <Route exact path="/login" render={p => <Login {...p} cb={c => this.setLogin(c)}></Login>}>
-                </Route>)
-            }
-            <this.ProtectedRouter>
-              <Layout style={{ minHeight: '100vh' }}>
-                <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse} style={{
-                  background: '#304156'
+          {
+            this.state.hasLogined || (
+              <Route exact path="/login" render={p => <Login {...p} cb={c => this.setLogin(c)}></Login>}>
+              </Route>)
+          }
+          <this.ProtectedRouter>
+            <Layout style={{ minHeight: '100vh' }}>
+              <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse} style={{
+                background: '#304156'
+              }}>
+                <div className="logo" />
+                <Menu theme="dark" defaultOpenKeys={["/user"]} selectedKeys={[this.state.to]} mode="inline" style={{
+                  userSelect: 'none',
+                  paddingTop: '64px'
                 }}>
-                  <div className="logo" />
-                  <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" style={{
-                    userSelect: 'none',
-                    paddingTop: '64px'
-                  }} selectedKeys={[window.location.pathname]}>
-                    <Menu.Item key="/">
-                      <Link to="/">
+                  <Menu.Item key="/">
+                    <Link to="/">
+                      <PieChartOutlined />
+                      <span>主页</span>
+                    </Link>
+                  </Menu.Item>
+                  <SubMenu
+                    key="/user"
+                    title={
+                      <span>
+                        <Link to="/user" style={{
+                          display: 'block'
+                        }}>
+                          <PieChartOutlined />
+                          <span>用户</span>
+                        </Link>
+                      </span>
+                    }
+                  >
+                    <Menu.Item key="/user/consumers">
+                      <Link to="/user/consumers">
                         <PieChartOutlined />
-                        <span>主页</span>
+                        <span>入住旅客</span>
                       </Link>
                     </Menu.Item>
-                    <SubMenu
-                      key="/user"
-                      title={
-                        <span>
-                          <Link to="/user" style={{
-                            display: 'block'
-                          }}>
-                            <PieChartOutlined />
-                            <span>用户</span>
-                          </Link>
-                        </span>
-                      }
-                    >
-                      <Menu.Item key="/user/consumers">
-                        <Link to="/user/consumers">
-                          <PieChartOutlined />
-                          <span>入住旅客</span>
-                        </Link>
-                      </Menu.Item>
-                      <Menu.Item key="/user/staffs">
-                        <Link to="/user/staffs">
-                          <PieChartOutlined />
-                          <span>酒店员工</span>
-                        </Link>
-                      </Menu.Item>
-                    </SubMenu>
-                    <Menu.Item key="/room">
-                      <Link to="/room">
+                    <Menu.Item key="/user/staffs">
+                      <Link to="/user/staffs">
                         <PieChartOutlined />
-                        <span>房间类型</span>
+                        <span>酒店员工</span>
                       </Link>
                     </Menu.Item>
-                  </Menu>
-                </Sider>
-                <Layout className="site-layout">
-                  <Header className="site-layout-background" style={{ padding: 0 }} />
-                  <Content className="display-content" style={{ margin: '0 16px' }}>
-                    <Switch>
-                      <this.ProtectedRouter path="/user" exact>
-                        <User></User>
-                      </this.ProtectedRouter>
-                      <this.ProtectedRouter path="/user/consumers" exact>
-                        <Consumer></Consumer>
-                      </this.ProtectedRouter>
-                      <this.ProtectedRouter path="/user/staffs" exact>
-                        <Staff></Staff>
-                      </this.ProtectedRouter>
-                      <this.ProtectedRouter path="/" exact>
-                        <Home></Home>
-                      </this.ProtectedRouter>
-                      <this.ProtectedRouter exact path="/room">
-                        <Room></Room>
-                      </this.ProtectedRouter>
-                    </Switch>
-                  </Content>
-                  <Footer style={{ textAlign: 'center' }}>Created by wuweichao</Footer>
-                </Layout>
+                  </SubMenu>
+                  <Menu.Item key="/room">
+                    <Link to="/room">
+                      <PieChartOutlined />
+                      <span>房间类型</span>
+                    </Link>
+                  </Menu.Item>
+                </Menu>
+              </Sider>
+              <Layout className="site-layout">
+                <Header className="site-layout-background" style={{ padding: 0 }} />
+                <Content className="display-content" style={{ margin: '0 16px' }}>
+                  <Switch>
+                    <this.ProtectedRouter path="/user" exact>
+                      <User></User>
+                    </this.ProtectedRouter>
+                    <this.ProtectedRouter path="/user/consumers" exact>
+                      <Consumer></Consumer>
+                    </this.ProtectedRouter>
+                    <this.ProtectedRouter path="/user/staffs" exact>
+                      <Staff></Staff>
+                    </this.ProtectedRouter>
+                    <this.ProtectedRouter path="/" exact>
+                      <Home></Home>
+                    </this.ProtectedRouter>
+                    <this.ProtectedRouter exact path="/room">
+                      <Room></Room>
+                    </this.ProtectedRouter>
+                  </Switch>
+                </Content>
+                <Footer style={{ textAlign: 'center' }}>Created by wuweichao</Footer>
               </Layout>
-            </this.ProtectedRouter>
+            </Layout>
+          </this.ProtectedRouter>
         </Switch>
       </Router>
     );
@@ -149,5 +154,6 @@ export default connect()(class extends React.Component<any, StateType> {
   shouldComponentUpdate(nextProps: PropsType, nextState: StateType) {
     return this.state.hasLogined !== nextState.hasLogined
   }
-})
+}
+export default connect()(router)
 
