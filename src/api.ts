@@ -37,7 +37,8 @@ class client {
     let res = await axios.request<any, AxiosResponse<APIResponse>>({
       method,
       data,
-      url
+      url,
+      withCredentials: true
     })
     return res.data
   }

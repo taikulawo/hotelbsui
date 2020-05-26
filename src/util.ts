@@ -1,4 +1,5 @@
 import { Columns } from "./store/reducers/user"
+import { useState } from "react"
 
 export function convertToDataSource(data: Array<Columns>, pk: string): Array<{ [key: string]: string }> {
   let a = data.map((d: any) => ({
@@ -56,4 +57,39 @@ export function splitString(s: string, ...point: Array<number>) {
   })
   result.push(s.substring(last))
   return result
+}
+
+export function useObservable(obj:any, isasync = false) {
+  let asyncid:any = null;
+  const [originobj, setoriginobj] = useState(obj);
+  const handler: ProxyHandler<any> = {
+    get: (target, prop) => {
+      // 递归创建并返回
+      if (typeof target[prop] === "object" && target[prop] !== null) {
+        return new Proxy(target[prop], handler);
+      }
+
+      return Reflect.get(target, prop);
+    },
+    set: (target, prop, value) => {
+      const result = Reflect.set(target, prop, value);
+
+      if (isasync) {
+        if (asyncid) {
+          clearTimeout(asyncid);
+        }
+
+        asyncid = setTimeout(() => {
+          setoriginobj(originobj);
+        }, 0);
+      } else {
+        setoriginobj(Object.assign({}, originobj));
+      }
+
+      return result;
+    }
+  };
+  const proxyobj = new Proxy(originobj, handler);
+  Reflect.defineProperty(proxyobj, originobj, { value: '"$$origindata"' });
+  return proxyobj;
 }

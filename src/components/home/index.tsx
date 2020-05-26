@@ -6,7 +6,7 @@ export default class extends React.Component {
       <div className="container">
         <div style={styles}>欢迎使用</div>
         <br />
-        <div style={styles}>西瓜酒店管理系统</div>
+        <div style={styles}>酒店管理系统</div>
         {/* <Button type="primary" onClick={() => this.login()}>登录</Button> */}
       </div>
     )
