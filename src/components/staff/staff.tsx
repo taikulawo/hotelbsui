@@ -114,8 +114,8 @@ export default class extends React.Component<PropsType, StateType> {
           }}>
             <div className="table-control">
               <Space>
-                <Button type="primary" onClick={this.addRow}>添加</Button>
-                <Button type="danger" onClick={this.deleteRows}>删除</Button>
+                <Button type="primary" onClick={this.addRow}>管理员工添加</Button>
+                <Button type="danger" onClick={this.deleteRows}>管理员工删除</Button>
               </Space>
             </div>
             <Table rowSelection={rowSelection} columns={this.state.columns} dataSource={this.state.dataSource} bordered>
