@@ -24,16 +24,16 @@ class client {
   public host: string
   // public port: number
   public protocol: string
-  public apiUrl = (path: string) => `${this.protocol}://${this.host}/api/${path}`
+  public apiUrl = (path: string) => `${window.location.protocol}//${this.host}/api/${path}`
   constructor(host: string) {
     this.host = host
-    if (window.location.protocol === "https") {
+    if (window.location.protocol === "https:") {
       this.protocol = "https"
       // this.port = 443
       // this.port = 3030
     } else {
       // this.port = 3030
-      this.protocol = "http"
+      this.protocol = "http:"
     }
   }
 
