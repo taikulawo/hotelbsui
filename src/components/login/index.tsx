@@ -26,10 +26,9 @@ export default function (props: PropsType) {
     await message.loading("登录成功，正在跳转", 1)
     await message.success("登录成功😀", 1)
   }
-
-  function toHome() {
+  function toPanel(path: string = "/") {
     setLogin(true)
-    let { from } = { from: { pathname: "/" } }
+    let { from } = { from: { pathname: path } }
     props.history.replace(from)
   }
   function loginClick(e: React.FormEvent<HTMLButtonElement>) {
@@ -39,7 +38,7 @@ export default function (props: PropsType) {
       if ("testuser" === obj.username && "testpassword" === obj.password) {
         // document.cookie = DEFAULT_JWT_TOKEN
         await showSuccess()
-        toHome()
+        toPanel()
         CookieHelper.add("jwt_token", DEFAULT_JWT_TOKEN)
         notification.open({
           message: '注意',
@@ -59,7 +58,7 @@ export default function (props: PropsType) {
         return
       }
       await showSuccess()
-      toHome()
+      toPanel()
       if (!Array.isArray(data)) {
         CookieHelper.add("jwt_token", data["jwt_token"])
       } else {
@@ -68,6 +67,10 @@ export default function (props: PropsType) {
     }())
   }
   useEffect(() => {
+    if (CookieHelper.has("jwt_token")) {
+      // 自动登录进去
+      toPanel()
+    }
     (async function () {
       const { code } = await client.apiGo("GET", client.apiUrl("room"))
       if (!isValidUser(code)) {
@@ -78,6 +81,7 @@ export default function (props: PropsType) {
       }
     })()
   }, [])
+
   return (
     <div className="login-container">
       <main className="container box-radius">
@@ -118,6 +122,9 @@ class CookieHelper {
   }
   static del(key: string) {
     delete CookieHelper.cookieObj[key]
+  }
+  static has(key: string) {
+    return typeof CookieHelper.cookieObj[key] !== 'undefined'
   }
 }
 
