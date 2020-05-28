@@ -22,14 +22,18 @@ export interface APIResponse {
 
 class client {
   public host: string
-  public port: number
-  public apiUrl = (path: string) => `http://${this.host}:${this.port}/${path}`
+  // public port: number
+  public protocol: string
+  public apiUrl = (path: string) => `${this.protocol}://${this.host}/api/${path}`
   constructor(host: string) {
     this.host = host
-    if (process.env.NODE_ENV === 'production') {
-      this.port = 443
+    if (window.location.protocol === "https") {
+      this.protocol = "https"
+      // this.port = 443
+      // this.port = 3030
     } else {
-      this.port = 3030
+      // this.port = 3030
+      this.protocol = "http"
     }
   }
 
@@ -69,7 +73,7 @@ class client {
 
   async update(table: string, id: string, data: Object) {
     const url = this.apiUrl(`${table}/${id}`)
-    const { data: d1 } =await this.apiGo("POST", url, JSON.stringify({
+    const { data: d1 } = await this.apiGo("POST", url, JSON.stringify({
       data
     }))
     return d1
@@ -81,7 +85,7 @@ class client {
    * @param {*} data 
    * @returns {code:<number>,lastId:<number>}
    */
-  async insert(table: string, data: Object): Promise<APIResponse>{
+  async insert(table: string, data: Object): Promise<APIResponse> {
     const url = this.apiUrl(`${table}`)
     return await this.apiGo("POST", url, JSON.stringify({
       data
@@ -99,5 +103,7 @@ class client {
   }
 }
 
-const c: client = new client('apibs.chaochaogege.net')
+
+
+const c: client = new client(window.location.host)
 export default c

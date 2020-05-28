@@ -40,18 +40,18 @@ export default function (props: PropsType) {
         // document.cookie = DEFAULT_JWT_TOKEN
         await showSuccess()
         toHome()
-        localStorage.setItem("jwt_token",DEFAULT_JWT_TOKEN)
+        CookieHelper.add("jwt_token", DEFAULT_JWT_TOKEN)
         notification.open({
           message: '注意',
           description:
-          "你使用的是测试账号，受限于Set-Cookie的设置策略，无法跨域设置TOKEN来访问被保护的API接口" + 
-          "。\n当你接下来点击响应的管理面板时，由于没有对应的权限，前端获取不到数据，页面可能会崩溃",
+            "你使用的是测试账号，受限于Set-Cookie的设置策略，无法跨域设置TOKEN来访问被保护的API接口" +
+            "。\n当你接下来点击响应的管理面板时，由于没有对应的权限，前端获取不到数据，页面可能会崩溃",
           icon: <SmileOutlined style={{ color: '#108ee9' }} />,
           duration: null
         });
         return
       }
-      let { code, data } = await client.apiGo("GET", client.apiUrl(`api/login?username=${obj.username}&password=${obj.password}`))
+      let { code, data } = await client.apiGo("GET", client.apiUrl(`login?username=${obj.username}&password=${obj.password}`))
       if (!isValidUser(code)) {
         message.error({
           content: "账号密码不正确，请重新再试😅"
@@ -60,9 +60,9 @@ export default function (props: PropsType) {
       }
       await showSuccess()
       toHome()
-      if(!Array.isArray(data)) {
-        localStorage.setItem("jwt_token",data["jwt_token"])
-      }else {
+      if (!Array.isArray(data)) {
+        CookieHelper.add("jwt_token", data["jwt_token"])
+      } else {
         console.error(`Isn't a Object ${data}`, data)
       }
     }())
@@ -101,6 +101,24 @@ export default function (props: PropsType) {
       </main>
     </div>
   )
+}
+
+class CookieHelper {
+  private static cookieObj = document.cookie.split(";")
+    .reduce((prev: any, next) => {
+      const o = next.split("=")
+      prev[o[0]] = o[1]
+      return prev
+    }, {})
+  constructor() {
+
+  }
+  static add(key: string, v: string) {
+    CookieHelper.cookieObj[key] = v
+  }
+  static del(key: string) {
+    delete CookieHelper.cookieObj[key]
+  }
 }
 
 // export default class extends React.Component<PropsType, StateType> {
