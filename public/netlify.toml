@@ -2,3 +2,10 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "https://apibs.chaochaogege.com/*"
+  to = "http://apibs.chaochaogege.com/:splat"
+  status = 301
+  force = true # COMMENT: ensure that we always redirect
+  headers = {X-From = "Netlify"}
